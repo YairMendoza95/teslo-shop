@@ -1,0 +1,1 @@
+# Mantiene el directorio al hacer commit. Por defecto git no da seguimiento a directorios vacios
