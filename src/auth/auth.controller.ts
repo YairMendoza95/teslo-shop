@@ -1,4 +1,5 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
@@ -16,5 +17,16 @@ export class AuthController {
 	@Post('login')
 	loginUser(@Body() loginUserDto: LoginUserDto) {
 		return this.authService.login(loginUserDto);
+	}
+
+	@Get()
+	@UseGuards(AuthGuard())
+	testingPrivateRoute(@Req() req: Express.Request) {
+		console.log({ req: req.user });
+
+		return {
+			ok: true,
+			message: "Hello"
+		}
 	}
 }

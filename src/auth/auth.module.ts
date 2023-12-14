@@ -11,6 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
 	imports: [
+		ConfigModule,
 		TypeOrmModule.forFeature([User]),
 		PassportModule.register({
 			defaultStrategy: 'jwt'
@@ -20,12 +21,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => {
-				return JwtModule.register({
+				return {
 					secret: configService.get('JWT_SECRET'),
 					signOptions: {
 						expiresIn: '2h'
 					}
-				})
+				}
 			}
 		})
 	],
