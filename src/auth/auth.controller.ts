@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Logger, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AuthService } from './auth.service';
+import { User } from './entities/user.entity';
 import { CreateUserDto, LoginUserDto } from './dto';
+import { GetUser, RawHeaders } from './decorators';
+import { UserRoleGuard } from './guards/user-role/user-role.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,14 +22,32 @@ export class AuthController {
 		return this.authService.login(loginUserDto);
 	}
 
-	@Get()
+	@Get('private')
 	@UseGuards(AuthGuard())
-	testingPrivateRoute(@Req() req: Express.Request) {
-		console.log({ req: req.user });
+	testingPrivateRoute(
+		@GetUser() user: User,
+		@GetUser('email') email: string,
+		@RawHeaders() rawHeaders: string[]
+	) {// Si se necesitan varios argumentos se hace en un array
 
 		return {
 			ok: true,
-			message: "Hello"
+			message: "Hello",
+			user,
+			email,
+			rawHeaders
 		}
+	}
+
+	@Get('private2')
+	@SetMetadata('roles', ['admin', 'super-user']) // Sirve para añadir informacion extra a la ejecución del método
+	@UseGuards(AuthGuard(), UserRoleGuard)
+	testingPrivateRoute2(
+		@GetUser() user: User
+	) {
+		return {
+			ok: true,
+			user
+		};
 	}
 }

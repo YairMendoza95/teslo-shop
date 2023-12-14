@@ -47,7 +47,7 @@ export class AuthService {
 		if (!user) throw new UnauthorizedException('Credentials are not valid (email)');
 
 		if (!bcrypt.compareSync(password, user.password)) throw new UnauthorizedException('Credentials are not valid (password)');
-		console.log({ user });
+
 		return {
 			...user,
 			token: this.getJwt({ id: user.id })
